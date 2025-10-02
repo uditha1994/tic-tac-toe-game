@@ -62,8 +62,8 @@ function handleCellClick(row, col, cell) {
     currentPlayer = 'O';
     statusText.textContent = 'Computer thinking...';
 
-    setTimeout(()=>{
-        if(gameActive){
+    setTimeout(() => {
+        if (gameActive) {
             computerMove();
         }
     }, 1000);
@@ -77,13 +77,45 @@ function makeMove(row, col, cellElement, player) {
     cellElement.disabled = true;
 }
 
-function computerMove(){
-    if(!gameActive){
+function computerMove() {
+    if (!gameActive) {
         return;
     }
 
-    
+    /**
+     * 1- try to win
+     * 2. try to block player winning
+     * 3. take center if available
+     * 4. take random available post
+     */
+
+    let move = getCenterMove();
+
+    if(move){
+        const cellElement = document.querySelector
+        (`[data-row="${move.row}"][data-col="${move.col}"]`);
+        makeMove(move.row, move.col, cellElement, 'O');
+
+        currentPlayer = 'X';
+        statusText.textContent = 'Your turn';
+    }
 }
+
+function findWinningMove() { }
+
+//to take the center position
+function getCenterMove() {
+    if (board[1][1] === '') {
+        return { row: 1, col: 1 };
+    }
+
+    return null;
+}
+
+function getRandomMove() {
+    const availableMoves = [];
+ }
+
 
 document.addEventListener('DOMContentLoaded', function () {
     initializeGame();
