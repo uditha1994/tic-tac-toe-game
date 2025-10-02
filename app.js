@@ -37,12 +37,52 @@ function createBoard() {
 
     //create 3x3 grid 9 cells
     for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 3; col++) { 
+        for (let col = 0; col < 3; col++) {
             const cell = document.createElement('button');
             cell.classList.add('cell');
-            cell.dataset.row = row;
+            cell.dataset.row = row; //store row position
+            cell.dataset.col = col; //store column position
+
+            cell.addEventListener('click', () =>
+                handleCellClick(row, col, cell));
+
+            gameBoard.appendChild(cell);
         }
     }
+}
+
+function handleCellClick(row, col, cell) {
+    if (board[row][col] !== '' || !gameActive || currentPlayer !== 'X') {
+        return;
+    }
+
+    makeMove(row, col, cell, 'X');
+
+    //switch to computer turn
+    currentPlayer = 'O';
+    statusText.textContent = 'Computer thinking...';
+
+    setTimeout(()=>{
+        if(gameActive){
+            computerMove();
+        }
+    }, 1000);
+}
+
+function makeMove(row, col, cellElement, player) {
+    board[row][col] = player; //update board array
+    cellElement.textContent = player; //add visual display
+    cellElement.classList.add(player.toLowerCase());
+    cellElement.classList.add('animate');
+    cellElement.disabled = true;
+}
+
+function computerMove(){
+    if(!gameActive){
+        return;
+    }
+
+    
 }
 
 document.addEventListener('DOMContentLoaded', function () {
