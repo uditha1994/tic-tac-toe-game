@@ -4,6 +4,7 @@ const statusText = document.getElementById('status-text');
 const playerScore = document.getElementById('playerScore');
 const computerScore = document.getElementById('computerScore');
 const drawScore = document.getElementById('drawScore');
+const resetBtn = document.getElementById('resetBtn');
 
 //Game State variable
 let board = []; //2D array to represent game board
@@ -201,6 +202,7 @@ function checkEndGame() {
 
     if (winner) {
         gameActive = false;
+        highlightWinningCells();
 
         if (winner === 'X') {
             statusText.textContent = 'You win! 🥇'
@@ -242,7 +244,67 @@ function isGameBoardFull() {
     return true;
 }
 
+//Highlight whe winning cells with animation
+function highlightWinningCells() {
+    //check rows for winning combinations
+    for (let row = 0; row < 3; row++) {
+        if (board[row][0] !== '' &&
+            board[row][0] === board[row][1] &&
+            board[row][1] === board[row][2]
+        ) {
+            for (let col = 0; col < 3; col++) {
+                const cell = document.querySelector
+                    (`[data-row="${row}"][data-col="${col}"]`);
+                cell.classList.add('winner');
+            }
+            return;
+        }
+    }
+
+    //check column 
+    for (let col = 0; col < 3; col++) {
+        if (board[0][col] !== '' &&
+            board[0][col] === board[1][col] &&
+            board[1][col] === board[2][col]
+        ) {
+            for (let row = 0; row < 3; row++) {
+                const cell = document.querySelector
+                    (`[data-row="${row}"][data-col="${col}"]`);
+                cell.classList.add('winner');
+            }
+        }
+        return;
+    }
+
+    //check diagonal
+    if (board[0][0] !== '' &&
+        board[0][0] === board[1][1] &&
+        board[1][1] === board[2][2]
+    ) {
+        for (let i = 0; i < 3; i++) {
+            const cell = document.querySelector
+                (`[data-row="${i}"][data-row="${i}"]`);
+            cell.classList.add('winner');
+        }
+        return;
+    }
+
+    if (board[0][2] !== '' &&
+        board[0][2] === board[1][1] &&
+        board[1][1] === board[2][0]
+    ) {
+        const positions = [[0, 2], [1, 1], [2, 0]];
+        positions.forEach(([row, col]) => {
+            const cell = document.querySelector
+                (`[data-row="${row}"][data-col="${col}"]`);
+            cell.classList.add('winner');
+        });
+        return;
+    }
+
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     initializeGame();
-})
+    resetBtn.addEventListener('click', resetGame);
+});
