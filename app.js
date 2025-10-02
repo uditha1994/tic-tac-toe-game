@@ -10,7 +10,7 @@ let board = []; //2D array to represent game board
 let currentPlayer = 'X' //Track current player (X-human O-computer)
 let gameActive = true; //track if game is sill active
 let scores = {
-    playe: 0,
+    player: 0,
     computer: 0,
     draws: 0
 }
@@ -58,6 +58,11 @@ function handleCellClick(row, col, cell) {
 
     makeMove(row, col, cell, 'X');
 
+    // check if game ended after human move
+    if (checkEndGame()) {
+        return;
+    }
+
     //switch to computer turn
     currentPlayer = 'O';
     statusText.textContent = 'Computer thinking...';
@@ -89,19 +94,43 @@ function computerMove() {
      * 4. take random available post
      */
 
-    let move = getCenterMove();
+    let move = findWinningMove('O') ||
+        findWinningMove('X') ||
+        getCenterMove() ||
+        getRandomMove();
 
-    if(move){
+    if (move) {
         const cellElement = document.querySelector
-        (`[data-row="${move.row}"][data-col="${move.col}"]`);
+            (`[data-row="${move.row}"][data-col="${move.col}"]`);
         makeMove(move.row, move.col, cellElement, 'O');
+
+        if (checkEndGame()) {
+            return;
+        }
 
         currentPlayer = 'X';
         statusText.textContent = 'Your turn';
     }
 }
 
-function findWinningMove() { }
+function findWinningMove(player) {
+    for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+            if (board[row][col] === '') {
+                //tempratily place the player symbol
+                board[row][col] = player;
+
+                if (checkWinner()) {
+                    board[row][col] = '';
+                    return { row, col };
+                }
+
+                board[row][col] = '';
+            }
+        }
+        return null;
+    }
+}
 
 //to take the center position
 function getCenterMove() {
@@ -114,7 +143,104 @@ function getCenterMove() {
 
 function getRandomMove() {
     const availableMoves = [];
- }
+
+    //find all empty cells
+    for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+            if (board[row][col] === '') {
+                availableMoves.push({ row, col });
+            }
+        }
+
+        if (availableMoves.length > 0) {
+            const randomIndex =
+                Math.floor(Math.random() * availableMoves.length);
+            return availableMoves[randomIndex];
+        }
+    }
+
+    return null;
+}
+
+function checkWinner() {
+    //check rows
+    for (let row = 0; row < 3; row++) {
+        if (board[row][0] !== '' &&
+            board[row][0] === board[row][1] &&
+            board[row][1] === board[row][2]
+        )
+            return board[row][0];
+    }
+
+    //check columns
+    for (let col = 0; col < 3; col++) {
+        if (board[0][col] !== '' &&
+            board[0][col] === board[1][col] &&
+            board[1][col] === board[2][col]
+        )
+            return board[0][col];
+    }
+
+    //check diagonal 
+    if (board[0][0] !== '' &&
+        board[0][0] === board[1][1] &&
+        board[1][1] === board[2][2]) {
+        return board[0][0];
+    }
+    if (board[0][2] !== '' &&
+        board[0][2] === board[1][1] &&
+        board[1][1] === board[2][0]) {
+        return board[0][2];
+    }
+
+    return null;//no winner found
+}
+
+function checkEndGame() {
+    const winner = checkWinner();
+
+    if (winner) {
+        gameActive = false;
+
+        if (winner === 'X') {
+            statusText.textContent = 'You win! 🥇'
+            scores.player++;
+            playerScore.textContent = scores.player;
+        } else {
+            statusText.textContent = 'Computer win! 💻'
+            scores.computer++;
+            computerScore.textContent = scores.computer;
+        }
+        return true;
+    }
+    //check for draw , board is full
+    if (isGameBoardFull()) {
+        gameActive = false;
+        statusText.textContent = "It's a Draw! 🤝";
+        scores.draws++;
+        drawScore.textContent = scores.draws;
+    }
+
+    return false;
+}
+
+function resetGame() {
+    gameBoard.style.opacity = '0.5'
+
+    setTimeout(() => {
+        initializeGame();
+        gameBoard.style.opacity = '1';
+    }, 500);
+}
+
+function isGameBoardFull() {
+    for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+            if (board[row][col] === '') { return false }
+        }
+    }
+    return true;
+}
 
 
 document.addEventListener('DOMContentLoaded', function () {
