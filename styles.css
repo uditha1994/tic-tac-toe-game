@@ -121,3 +121,57 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
+
+.cell:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.cell.x {
+    color: #60a5fa;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.3));
+    border-color: rgba(59, 130, 246, 0.5);
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.cell.o {
+    color: #f472b6;
+    background: linear-gradient(135deg, rgba(244, 144, 182, 0.2), rgba(236, 99, 153, 0.3));
+    border-color: rgba(244, 144, 182, 0.5);
+    text-shadow: 0 0 10px rgba(244, 144, 182, 0.5);
+}
+
+.cell.animate {
+    animation: cellclick 0.4s ease;
+}
+
+@keyframes cellclick {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(0.85);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.cell.winner {
+    animation: winnerGlow 1.2s ease-in-out infinite;
+}
+
+@keyframes winnerGlow {
+    0% {
+        transform: scale(1);
+        border-color: rgba(34, 197, 94, 0.3);
+    }
+
+    100% {
+        transform: scale(1.08);
+        border-color: rgba(34, 197, 94, 1);
+    }
+}
+
